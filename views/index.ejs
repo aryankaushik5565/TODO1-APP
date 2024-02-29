@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-pane">
+            <h2>Tasks</h2>
+            <ul>
+                <% tasks.forEach((task, index) => { %>
+                    <li>
+                        <% if (task.completed) { %>
+                            <s><%= task.name %></s>
+                        <% } else { %>
+                            <%= task.name %>
+                        <% } %>
+                        <input type="checkbox" onchange="completeTask(<%= index %>)" <% if (task.completed) { %> checked <% } %>>
+                        <span class="edit" onclick="editTask(<%= index %>)">✏️</span>
+                        <span class="delete" onclick="deleteTask(<%= index %>)">❌</span>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+        <div class="right-pane">
+            <h2>Add Task</h2>
+            <form action="/addTask" method="post">
+                <textarea name="task" placeholder="Type here"></textarea>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+ 
+<script>
+    function completeTask(index) {
+        fetch('/completeTask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ index })
+        });
+    }
+
+    function deleteTask(index) {
+        fetch('/deleteTask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ index })
+        }).then(() => {
+            window.location.reload(); 
+        });
+    }
+
+    function editTask(index) {
+        const newName = prompt('Enter new task name:');
+        if (newName) {
+            fetch('/updateTask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index, newName })
+            }).then(() => {
+                window.location.reload(); 
+            });
+        }
+    }
+</script>
+
+    </script>
+</body>
+</html>
